@@ -44,8 +44,8 @@ app.get('/api/health', (_, res) => {
 const clientDist = path.resolve(__dirname, '../../client/dist');
 if (fs.existsSync(clientDist)) {
   app.use(express.static(clientDist));
-  // SPA fallback — all non-API routes serve index.html
-  app.get('*', (req, res) => {
+  // SPA fallback — all non-API routes serve index.html (Express 5 requires named wildcard)
+  app.get('/{*splat}', (req, res) => {
     res.sendFile(path.join(clientDist, 'index.html'));
   });
   console.log(`🌐 Serving React frontend from ${clientDist}`);
