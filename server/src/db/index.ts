@@ -3,17 +3,33 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+let pool: Pool | null = null;
 
-pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
-});
+if (process.env.DATABASE_URL) {
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000,
+  });
 
-export const query = (text: string, params?: any[]) => pool.query(text, params);
+  pool.on('error', (err) => {
+    console.error('Unexpected DB client error:', err.message);
+  });
+
+  pool.query('SELECT 1').then(() => {
+    console.log('✅ Database connected');
+  }).catch((err) => {
+    console.warn('⚠️  Database connection failed, running in demo mode:', err.message);
+  });
+} else {
+  console.warn('⚠️  DATABASE_URL not set — running in demo mode (API returns fallback data)');
+}
+
+export const query = async (text: string, params?: any[]) => {
+  if (!pool) throw new Error('NO_DB');
+  return pool.query(text, params);
+};
+
 export default pool;
