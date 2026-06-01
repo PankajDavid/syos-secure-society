@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
 
 import dashboardRouter from './routes/dashboard';
 import visitorsRouter from './routes/visitors';
@@ -18,13 +20,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*', credentials: true }));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// API Routes
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/visitors', visitorsRouter);
 app.use('/api/guards', guardsRouter);
@@ -37,6 +39,21 @@ app.use('/api/reports', reportsRouter);
 app.get('/api/health', (_, res) => {
   res.json({ status: 'ok', service: 'SYOS Secure Society API', timestamp: new Date().toISOString() });
 });
+
+// Serve React frontend from ../client/dist if it exists
+const clientDist = path.resolve(__dirname, '../../client/dist');
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  // SPA fallback — all non-API routes serve index.html
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+  console.log(`🌐 Serving React frontend from ${clientDist}`);
+} else {
+  app.get('/', (_, res) => {
+    res.json({ message: 'SYOS Secure Society API', docs: '/api/health', frontend: 'Deploy client separately' });
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`🛡️  SYOS Secure Society API running on port ${PORT}`);
