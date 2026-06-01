@@ -1,126 +1,119 @@
 import { FileText, Download, BarChart3, Users, Shield, AlertTriangle, Eye, Calendar } from 'lucide-react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, Legend
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
 
 const reportTypes = [
-  { title: 'Daily Security Report', desc: 'Complete summary of all security activities for the day', icon: Shield, color: 'text-blue-600 bg-blue-50', category: 'Daily' },
-  { title: 'Visitor Summary Report', desc: 'Visitor logs, approvals, rejections with analytics', icon: Users, color: 'text-green-600 bg-green-50', category: 'Visitor' },
-  { title: 'Guard Attendance Report', desc: 'Detailed attendance records, shift coverage, overtime', icon: Shield, color: 'text-purple-600 bg-purple-50', category: 'Attendance' },
-  { title: 'Incident Report', desc: 'All incidents, resolution time, category breakdown', icon: AlertTriangle, color: 'text-red-600 bg-red-50', category: 'Incident' },
-  { title: 'Observation Report', desc: 'Guard observations, infrastructure issues, action taken', icon: Eye, color: 'text-teal-600 bg-teal-50', category: 'Observation' },
-  { title: 'Monthly Analytics', desc: 'Month-over-month trends, KPIs, and performance metrics', icon: BarChart3, color: 'text-orange-600 bg-orange-50', category: 'Analytics' },
+  { title:'Daily Security Report',  desc:'Complete summary of all security activities for the day', icon:Shield,        color:'#EFF6FF', icolor:'#2563EB' },
+  { title:'Visitor Summary Report', desc:'Visitor logs, approvals, rejections with analytics',     icon:Users,         color:'#F0FDF4', icolor:'#16A34A' },
+  { title:'Guard Attendance Report',desc:'Attendance records, shift coverage, overtime',           icon:Shield,        color:'#F5F3FF', icolor:'#7C3AED' },
+  { title:'Incident Report',        desc:'All incidents, resolution time, category breakdown',     icon:AlertTriangle, color:'#FFF1F2', icolor:'#E11D48' },
+  { title:'Observation Report',     desc:'Guard observations, infrastructure issues, action taken',icon:Eye,           color:'#F0FDFA', icolor:'#0D9488' },
+  { title:'Monthly Analytics',      desc:'Month-over-month trends, KPIs, performance metrics',    icon:BarChart3,     color:'#FFF7ED', icolor:'#EA580C' },
 ];
 
 const monthlyData = [
-  { month: 'Jan', visitors: 2340, incidents: 8, guards: 14 },
-  { month: 'Feb', visitors: 2100, incidents: 6, guards: 14 },
-  { month: 'Mar', visitors: 2800, incidents: 11, guards: 15 },
-  { month: 'Apr', visitors: 2650, incidents: 5, guards: 14 },
-  { month: 'May', visitors: 3100, incidents: 9, guards: 16 },
-  { month: 'Jun', visitors: 2900, incidents: 4, guards: 14 },
+  { month:'Jan', visitors:2340, incidents:8 },
+  { month:'Feb', visitors:2100, incidents:6 },
+  { month:'Mar', visitors:2800, incidents:11 },
+  { month:'Apr', visitors:2650, incidents:5 },
+  { month:'May', visitors:3100, incidents:9 },
+  { month:'Jun', visitors:2900, incidents:4 },
 ];
 
 const categoryData = [
-  { name: 'Personal Visit', count: 1240 },
-  { name: 'Delivery', count: 890 },
-  { name: 'Domestic Help', count: 670 },
-  { name: 'Maintenance', count: 340 },
-  { name: 'Business', count: 280 },
-  { name: 'Courier', count: 520 },
+  { name:'Personal Visit', count:1240 },
+  { name:'Delivery',       count:890  },
+  { name:'Domestic Help',  count:670  },
+  { name:'Maintenance',    count:340  },
+  { name:'Business',       count:280  },
+  { name:'Courier',        count:520  },
 ];
 
-function downloadMock(type: string) {
-  alert(`📥 ${type} download started!\n\nIn production, this will generate a real PDF/Excel/CSV file.`);
-}
+const download = (type: string) => alert(`📥 ${type} download started!\n\nIn production this generates a real file.`);
 
 export default function Reports() {
   return (
-    <div className="space-y-5">
-      <div>
-        <h2 className="text-xl font-bold text-slate-800">Reports & Analytics</h2>
-        <p className="text-sm text-slate-500">Generate and export security reports</p>
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div className="page-header">
+        <div><h2>Reports & Analytics</h2><p>Generate and export security reports</p></div>
       </div>
 
-      {/* Date Range Selector */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 flex flex-wrap items-center gap-3">
-        <Calendar size={16} className="text-slate-400" />
-        <span className="text-sm text-slate-600 font-medium">Report Period:</span>
-        <input type="date" defaultValue="2025-06-01" className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        <span className="text-slate-400 text-sm">to</span>
-        <input type="date" defaultValue="2025-06-30" className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">Apply Filter</button>
+      {/* Date range */}
+      <div className="card" style={{ padding:12 }}>
+        <div style={{ display:'flex', flexWrap:'wrap', alignItems:'center', gap:10 }}>
+          <Calendar size={15} style={{ color:'#64748B' }} />
+          <span style={{ fontSize:13, fontWeight:600, color:'#475569' }}>Report Period:</span>
+          <input type="date" className="input" style={{ width:'auto' }} defaultValue="2025-06-01" />
+          <span style={{ fontSize:13, color:'#94A3B8' }}>to</span>
+          <input type="date" className="input" style={{ width:'auto' }} defaultValue="2025-06-30" />
+          <button className="btn btn-primary btn-sm">Apply Filter</button>
+        </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {/* Quick stats */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:10 }}>
         {[
-          { label: 'Total Visitors (June)', value: '2,847', change: '+8.2%', up: true },
-          { label: 'Incidents Reported', value: '23', change: '-12%', up: false },
-          { label: 'Guard Attendance', value: '94.2%', change: '+2.1%', up: true },
-          { label: 'Observations Filed', value: '41', change: '+15%', up: true },
+          { label:'Total Visitors (June)', value:'2,847', change:'+8.2%', up:true },
+          { label:'Incidents Reported',    value:'23',    change:'-12%',  up:false },
+          { label:'Guard Attendance',      value:'94.2%', change:'+2.1%', up:true },
+          { label:'Observations Filed',    value:'41',    change:'+15%',  up:true },
         ].map(s => (
-          <div key={s.label} className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
-            <p className="text-2xl font-bold text-slate-800">{s.value}</p>
-            <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
-            <p className={`text-xs font-semibold mt-2 ${s.up ? 'text-green-600' : 'text-red-600'}`}>{s.change} vs last month</p>
+          <div key={s.label} className="card">
+            <p style={{ fontSize:22, fontWeight:800, color:'#1E293B' }}>{s.value}</p>
+            <p style={{ fontSize:11, color:'#94A3B8', margin:'3px 0 6px', lineHeight:1.4 }}>{s.label}</p>
+            <p style={{ fontSize:11, fontWeight:700, color: s.up?'#16A34A':'#EF4444' }}>{s.change} vs last month</p>
           </div>
         ))}
       </div>
 
       {/* Charts */}
-      <div className="grid lg:grid-cols-2 gap-5">
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
-          <h3 className="font-bold text-slate-800 mb-4">Monthly Visitor Trends</h3>
-          <ResponsiveContainer width="100%" height={200}>
+      <div className="two-col">
+        <div className="card">
+          <p style={{ fontWeight:700, fontSize:14, color:'#1E293B', marginBottom:14 }}>Monthly Visitor Trends</p>
+          <ResponsiveContainer width="100%" height={180}>
             <LineChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: 12 }} />
-              <Line type="monotone" dataKey="visitors" stroke="#2563EB" strokeWidth={2.5} dot={{ fill: '#2563EB', r: 3 }} name="Visitors" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+              <XAxis dataKey="month" tick={{ fontSize:11, fill:'#94A3B8' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize:11, fill:'#94A3B8' }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ borderRadius:10, border:'1px solid #E2E8F0', fontSize:12 }} />
+              <Line type="monotone" dataKey="visitors" stroke="#2563EB" strokeWidth={2.5} dot={{ fill:'#2563EB', r:3 }} name="Visitors" />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
-          <h3 className="font-bold text-slate-800 mb-4">Visitor Purpose Breakdown</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={categoryData} layout="vertical" barSize={12}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis type="number" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} width={90} />
-              <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: 12 }} />
-              <Bar dataKey="count" fill="#2563EB" radius={[0, 4, 4, 0]} name="Count" />
+        <div className="card">
+          <p style={{ fontWeight:700, fontSize:14, color:'#1E293B', marginBottom:14 }}>Visitor Purpose Breakdown</p>
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={categoryData} layout="vertical" barSize={10}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+              <XAxis type="number" tick={{ fontSize:10, fill:'#94A3B8' }} axisLine={false} tickLine={false} />
+              <YAxis dataKey="name" type="category" tick={{ fontSize:9, fill:'#64748B' }} axisLine={false} tickLine={false} width={80} />
+              <Tooltip contentStyle={{ borderRadius:10, border:'1px solid #E2E8F0', fontSize:12 }} />
+              <Bar dataKey="count" fill="#2563EB" radius={[0,4,4,0]} name="Count" />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Report Cards */}
+      {/* Report cards */}
       <div>
-        <h3 className="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">Available Reports</h3>
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {reportTypes.map((report) => (
-            <div key={report.title} className="bg-white rounded-xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${report.color}`}>
-                  <report.icon size={18} />
+        <p className="section-label">Available Reports</p>
+        <div className="reports-grid">
+          {reportTypes.map(r => (
+            <div key={r.title} className="card">
+              <div style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:14 }}>
+                <div style={{ width:40, height:40, borderRadius:12, background:r.color, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                  <r.icon size={18} style={{ color:r.icolor }} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800 text-sm">{report.title}</h4>
-                  <p className="text-xs text-slate-400 mt-0.5">{report.desc}</p>
+                  <p style={{ fontWeight:700, fontSize:13, color:'#1E293B', marginBottom:3 }}>{r.title}</p>
+                  <p style={{ fontSize:11, color:'#94A3B8', lineHeight:1.5 }}>{r.desc}</p>
                 </div>
               </div>
-              <div className="flex gap-2">
-                {['PDF', 'Excel', 'CSV'].map(format => (
-                  <button
-                    key={format}
-                    onClick={() => downloadMock(`${report.title} — ${format}`)}
-                    className="flex-1 flex items-center justify-center gap-1 text-xs border border-slate-200 text-slate-600 py-2 rounded-lg hover:bg-slate-50 hover:border-blue-300 hover:text-blue-600 transition-all font-medium"
-                  >
-                    <Download size={11} /> {format}
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:6 }}>
+                {['PDF','Excel','CSV'].map(fmt => (
+                  <button key={fmt} onClick={()=>download(`${r.title} — ${fmt}`)}
+                    className="btn btn-ghost btn-sm" style={{ justifyContent:'center' }}>
+                    <Download size={11}/> {fmt}
                   </button>
                 ))}
               </div>
@@ -129,19 +122,21 @@ export default function Reports() {
         </div>
       </div>
 
-      {/* Scheduled Reports */}
-      <div className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white rounded-xl p-5">
-        <h3 className="font-bold mb-3">Automated Report Scheduling</h3>
-        <div className="grid sm:grid-cols-3 gap-3">
+      {/* Scheduled */}
+      <div style={{ background:'linear-gradient(135deg,#0F172A,#1E293B)', borderRadius:14, padding:'18px 16px', color:'white' }}>
+        <p style={{ fontWeight:700, fontSize:14, marginBottom:12 }}>Automated Report Scheduling</p>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:8 }}>
           {[
-            { label: 'Daily Report', time: 'Every day at 8:00 AM', status: 'Active' },
-            { label: 'Weekly Summary', time: 'Every Monday at 9:00 AM', status: 'Active' },
-            { label: 'Monthly Analytics', time: '1st of every month', status: 'Active' },
-          ].map(s => (
-            <div key={s.label} className="bg-white/5 border border-white/10 rounded-xl p-3">
-              <p className="font-semibold text-sm">{s.label}</p>
-              <p className="text-xs text-slate-400 mt-0.5">{s.time}</p>
-              <span className="inline-block mt-2 text-xs text-green-400 font-semibold">● {s.status}</span>
+            ['Daily Report',     'Every day at 8:00 AM'],
+            ['Weekly Summary',   'Every Monday at 9:00 AM'],
+            ['Monthly Analytics','1st of every month'],
+          ].map(([label,time]) => (
+            <div key={label} style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <div>
+                <p style={{ fontWeight:600, fontSize:13 }}>{label}</p>
+                <p style={{ fontSize:11, color:'#64748B' }}>{time}</p>
+              </div>
+              <span style={{ fontSize:11, color:'#4ADE80', fontWeight:700 }}>● Active</span>
             </div>
           ))}
         </div>

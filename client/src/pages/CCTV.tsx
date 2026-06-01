@@ -1,180 +1,168 @@
 import { useState } from 'react';
-import { Camera, Bell, CheckCircle, AlertTriangle, Clock, Maximize2, Play, Wifi } from 'lucide-react';
+import { Camera, Bell, CheckCircle, Clock, Maximize2, Play, Wifi } from 'lucide-react';
 import { DEMO_CAMERA_ALERTS } from '@/data/demo';
 import { timeAgo } from '@/lib/utils';
 
 const cameras = [
-  { id: 'CAM-001', name: 'Main Gate', location: 'Main Entrance', status: 'live', color: 'from-slate-700 to-slate-900', icon: '🚪' },
-  { id: 'CAM-002', name: 'Parking Area', location: 'B-Block Parking', status: 'live', color: 'from-slate-800 to-slate-950', icon: '🚗' },
-  { id: 'CAM-003', name: 'Boundary Wall', location: 'North Perimeter', status: 'live', color: 'from-zinc-700 to-zinc-900', icon: '🧱' },
-  { id: 'CAM-004', name: 'Club House', location: 'Community Hall', status: 'offline', color: 'from-stone-600 to-stone-900', icon: '🏛️' },
+  { id:'CAM-001', name:'Main Gate',     location:'Main Entrance',   status:'live',    color:'#1E293B', icon:'🚪' },
+  { id:'CAM-002', name:'Parking Area',  location:'B-Block Parking', status:'live',    color:'#0F172A', icon:'🚗' },
+  { id:'CAM-003', name:'Boundary Wall', location:'North Perimeter', status:'live',    color:'#1C1917', icon:'🧱' },
+  { id:'CAM-004', name:'Club House',    location:'Community Hall',  status:'offline', color:'#27272A', icon:'🏛️' },
 ];
 
-const alertTypeConfig: Record<string, { color: string; bg: string; icon: string }> = {
-  'Movement Detected': { color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200', icon: '🚶' },
-  'Unknown Vehicle': { color: 'text-red-600', bg: 'bg-red-50 border-red-200', icon: '🚗' },
-  'After Hours Activity': { color: 'text-purple-600', bg: 'bg-purple-50 border-purple-200', icon: '🌙' },
+const alertTypeConfig: Record<string,{color:string;bg:string;border:string;icon:string}> = {
+  'Movement Detected': { color:'#B45309', bg:'#FFFBEB', border:'#FDE68A', icon:'🚶' },
+  'Unknown Vehicle':   { color:'#BE123C', bg:'#FFF1F2', border:'#FECDD3', icon:'🚗' },
+  'After Hours Activity': { color:'#6D28D9', bg:'#F5F3FF', border:'#DDD6FE', icon:'🌙' },
 };
 
 export default function CCTV() {
   const [alerts, setAlerts] = useState(DEMO_CAMERA_ALERTS);
   const [selectedCam, setSelectedCam] = useState(cameras[0]);
-  const [selectedAlert, setSelectedAlert] = useState<string | null>(null);
+  const unack = alerts.filter(a=>!a.is_acknowledged).length;
 
-  const acknowledgeAlert = (id: string) => {
-    setAlerts(alerts.map(a => a.id === id ? { ...a, is_acknowledged: true } : a));
-  };
-
-  const unacknowledged = alerts.filter(a => !a.is_acknowledged).length;
+  const ack = (id: string) => setAlerts(alerts.map(a=>a.id===id?{...a,is_acknowledged:true}:a));
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-slate-800">CCTV Monitoring</h2>
-          <p className="text-sm text-slate-500">Live camera feeds and AI-powered alerts</p>
-        </div>
-        {unacknowledged > 0 && (
-          <div className="flex items-center gap-2 bg-red-50 border border-red-200 px-3 py-2 rounded-xl">
-            <Bell size={14} className="text-red-600 animate-pulse" />
-            <span className="text-sm font-semibold text-red-700">{unacknowledged} active alert{unacknowledged > 1 ? 's' : ''}</span>
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div className="page-header">
+        <div><h2>CCTV Monitoring</h2><p>Live camera feeds and AI-powered alerts</p></div>
+        {unack > 0 && (
+          <div style={{ display:'flex', alignItems:'center', gap:6, background:'#FFF1F2', border:'1px solid #FECDD3', borderRadius:10, padding:'7px 12px' }}>
+            <Bell size={13} style={{ color:'#E11D48', animation:'pulse-dot 2s infinite' }} />
+            <span style={{ fontSize:13, fontWeight:700, color:'#BE123C' }}>{unack} active alert{unack>1?'s':''}</span>
           </div>
         )}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-5">
-        {/* Main Feed */}
-        <div className="lg:col-span-2 space-y-4">
-          {/* Active Camera */}
-          <div className="bg-slate-900 rounded-2xl overflow-hidden shadow-xl">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${selectedCam.status === 'live' ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
-                <span className="text-white font-semibold text-sm">{selectedCam.name}</span>
-                <span className="text-slate-400 text-xs">{selectedCam.location}</span>
+      <div className="cctv-grid">
+        {/* Main feed */}
+        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+          <div style={{ background:'#0F172A', borderRadius:16, overflow:'hidden', boxShadow:'0 20px 40px rgba(0,0,0,0.4)' }}>
+            {/* Feed header */}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 14px', borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <span style={{ width:7, height:7, borderRadius:'50%', background: selectedCam.status==='live'?'#4ADE80':'#EF4444', animation: selectedCam.status==='live'?'pulse-dot 2s infinite':'none' }} />
+                <span style={{ color:'white', fontWeight:700, fontSize:13 }}>{selectedCam.name}</span>
+                <span style={{ color:'#64748B', fontSize:11 }}>{selectedCam.location}</span>
               </div>
-              <div className="flex items-center gap-2">
-                {selectedCam.status === 'live' && (
-                  <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded animate-blink">● LIVE</span>
+              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                {selectedCam.status==='live' && (
+                  <span style={{ background:'#DC2626', color:'white', fontSize:10, fontWeight:800, padding:'2px 6px', borderRadius:4, animation:'blink 1s infinite' }}>● LIVE</span>
                 )}
-                <button className="text-slate-400 hover:text-white"><Maximize2 size={16} /></button>
+                <button style={{ background:'none', border:'none', cursor:'pointer', color:'#64748B', display:'flex' }}><Maximize2 size={14}/></button>
               </div>
             </div>
 
-            {/* Camera Placeholder */}
-            <div className={`bg-gradient-to-br ${selectedCam.color} aspect-video flex flex-col items-center justify-center relative`}>
-              {selectedCam.status === 'offline' ? (
-                <div className="text-center text-slate-400">
-                  <Wifi size={40} className="mx-auto mb-3 opacity-30" />
-                  <p className="text-sm font-medium">Camera Offline</p>
-                  <p className="text-xs opacity-50">Signal not detected</p>
+            {/* Camera feed */}
+            <div style={{ background:`linear-gradient(135deg, ${selectedCam.color}, #000)`, aspectRatio:'16/9', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', position:'relative' }}>
+              {selectedCam.status==='offline' ? (
+                <div style={{ textAlign:'center', color:'#475569' }}>
+                  <Wifi size={36} style={{ margin:'0 auto 10px', opacity:0.3 }} />
+                  <p style={{ fontSize:13, fontWeight:600 }}>Camera Offline</p>
+                  <p style={{ fontSize:11, opacity:0.5 }}>Signal not detected</p>
                 </div>
               ) : (
                 <>
-                  <div className="text-7xl mb-4">{selectedCam.icon}</div>
-                  <div className="text-white/20 text-xs font-mono">{selectedCam.id}</div>
-                  {/* Simulated scan lines */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/1 to-transparent animate-pulse opacity-30" />
-                  {/* Corner overlays */}
-                  <div className="absolute top-3 left-3 w-6 h-6 border-l-2 border-t-2 border-green-400/60" />
-                  <div className="absolute top-3 right-3 w-6 h-6 border-r-2 border-t-2 border-green-400/60" />
-                  <div className="absolute bottom-3 left-3 w-6 h-6 border-l-2 border-b-2 border-green-400/60" />
-                  <div className="absolute bottom-3 right-3 w-6 h-6 border-r-2 border-b-2 border-green-400/60" />
-                  {/* Timestamp */}
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-green-400 text-xs font-mono">
+                  <div style={{ fontSize:56, marginBottom:8 }}>{selectedCam.icon}</div>
+                  <div style={{ color:'rgba(255,255,255,0.15)', fontSize:11, fontFamily:'monospace' }}>{selectedCam.id}</div>
+                  {/* Corner brackets */}
+                  {[['top:10px','left:10px','borderLeft','borderTop'],['top:10px','right:10px','borderRight','borderTop'],
+                    ['bottom:10px','left:10px','borderLeft','borderBottom'],['bottom:10px','right:10px','borderRight','borderBottom']].map((c,i) => (
+                    <div key={i} style={{
+                      position:'absolute', width:18, height:18,
+                      top: c[0].split(':')[1], left: c[0].startsWith('top')?c[1].split(':')[1]:undefined,
+                      right: c[0].startsWith('top')&&c[1].startsWith('right')?c[1].split(':')[1]:c[0].startsWith('bottom')&&c[1].startsWith('right')?c[1].split(':')[1]:undefined,
+                      bottom: c[0].startsWith('bottom')?c[0].split(':')[1]:undefined,
+                      [c[2]]: '2px solid rgba(74,222,128,0.5)',
+                      [c[3]]: '2px solid rgba(74,222,128,0.5)',
+                    }} />
+                  ))}
+                  <div style={{ position:'absolute', bottom:8, left:'50%', transform:'translateX(-50%)', color:'#4ADE80', fontSize:10, fontFamily:'monospace', whiteSpace:'nowrap' }}>
                     {new Date().toLocaleTimeString('en-IN')} | {selectedCam.name.toUpperCase()}
                   </div>
                 </>
               )}
             </div>
 
-            <div className="px-4 py-2 bg-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-3 text-xs text-slate-400">
-                <span className="flex items-center gap-1"><Camera size={11} /> HD 1080p</span>
-                <span className="flex items-center gap-1"><Clock size={11} /> 24/7 Recording</span>
+            <div style={{ padding:'8px 14px', background:'#1E293B', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <div style={{ display:'flex', gap:14, fontSize:11, color:'#64748B' }}>
+                <span style={{ display:'flex', alignItems:'center', gap:4 }}><Camera size={10}/> HD 1080p</span>
+                <span style={{ display:'flex', alignItems:'center', gap:4 }}><Clock size={10}/> 24/7 Recording</span>
               </div>
-              <button className="flex items-center gap-1 text-xs text-slate-300 bg-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-600">
-                <Play size={11} /> Playback
+              <button className="btn btn-sm" style={{ background:'#334155', color:'#CBD5E1', border:'none', display:'flex', alignItems:'center', gap:4 }}>
+                <Play size={10}/> Playback
               </button>
             </div>
           </div>
 
-          {/* Camera Thumbnails */}
-          <div className="grid grid-cols-4 gap-2">
-            {cameras.map((cam) => (
-              <button
-                key={cam.id}
-                onClick={() => setSelectedCam(cam)}
-                className={`bg-slate-900 rounded-xl overflow-hidden border-2 transition-all ${selectedCam.id === cam.id ? 'border-blue-500' : 'border-transparent hover:border-slate-600'}`}
-              >
-                <div className={`bg-gradient-to-br ${cam.color} aspect-video flex items-center justify-center`}>
-                  <div className="text-2xl">{cam.icon}</div>
-                  {cam.status === 'live' && (
-                    <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-green-400 rounded-full" />
-                  )}
+          {/* Thumbnails */}
+          <div className="cam-thumbs">
+            {cameras.map(cam => (
+              <button key={cam.id} onClick={()=>setSelectedCam(cam)} style={{
+                background:'#0F172A', borderRadius:12, overflow:'hidden', cursor:'pointer',
+                border: selectedCam.id===cam.id ? '2px solid #2563EB' : '2px solid transparent',
+                padding:0, transition:'border-color 0.15s',
+              }}>
+                <div style={{ background:`linear-gradient(135deg,${cam.color},#000)`, aspectRatio:'16/9', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>
+                  {cam.icon}
                 </div>
-                <div className="px-2 py-1.5">
-                  <p className="text-xs text-white font-medium truncate">{cam.name}</p>
-                  <p className="text-xs text-slate-500">{cam.status.toUpperCase()}</p>
+                <div style={{ padding:'6px 8px' }}>
+                  <p style={{ fontSize:10, color:'white', fontWeight:600, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cam.name}</p>
+                  <p style={{ fontSize:9, color: cam.status==='live'?'#4ADE80':'#EF4444', fontWeight:600 }}>{cam.status.toUpperCase()}</p>
                 </div>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Alerts Panel */}
-        <div className="space-y-3">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-100">
-            <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-              <h3 className="font-bold text-slate-800">Alert Timeline</h3>
-              <span className="text-xs text-slate-400">{alerts.length} total</span>
+        {/* Alerts panel */}
+        <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+          <div className="card" style={{ padding:0, overflow:'hidden' }}>
+            <div style={{ padding:'12px 14px', borderBottom:'1px solid #F1F5F9', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <p style={{ fontWeight:700, fontSize:14, color:'#1E293B' }}>Alert Timeline</p>
+              <span style={{ fontSize:11, color:'#94A3B8' }}>{alerts.length} total</span>
             </div>
-            <div className="p-3 space-y-2 max-h-96 overflow-y-auto scrollbar-thin">
-              {alerts.map((alert) => {
-                const cfg = alertTypeConfig[alert.alert_type] || { color: 'text-slate-600', bg: 'bg-slate-50 border-slate-200', icon: '⚠️' };
+            <div style={{ maxHeight:280, overflowY:'auto', padding:'8px' }}>
+              {alerts.map(alert => {
+                const cfg = alertTypeConfig[alert.alert_type]||{color:'#475569',bg:'#F8FAFC',border:'#E2E8F0',icon:'⚠️'};
                 return (
-                  <div
-                    key={alert.id}
-                    className={`p-3 rounded-xl border text-xs ${cfg.bg} ${alert.is_acknowledged ? 'opacity-60' : ''}`}
-                  >
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <div className="flex items-center gap-1.5 font-semibold">
-                        <span>{cfg.icon}</span>
-                        <span className={cfg.color}>{alert.alert_type}</span>
+                  <div key={alert.id} style={{
+                    padding:'10px', borderRadius:10, border:`1px solid ${cfg.border}`,
+                    background: cfg.bg, marginBottom:8, opacity: alert.is_acknowledged?0.6:1,
+                  }}>
+                    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:6, marginBottom:4 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+                        <span style={{ fontSize:14 }}>{cfg.icon}</span>
+                        <span style={{ fontSize:12, fontWeight:700, color:cfg.color }}>{alert.alert_type}</span>
                       </div>
-                      {!alert.is_acknowledged && (
-                        <button
-                          onClick={() => acknowledgeAlert(alert.id)}
-                          className="text-xs bg-white border border-slate-200 px-2 py-0.5 rounded-lg hover:bg-slate-50 text-slate-600 whitespace-nowrap"
-                        >
-                          Ack
-                        </button>
-                      )}
-                      {alert.is_acknowledged && <CheckCircle size={12} className="text-green-500 flex-shrink-0" />}
+                      {!alert.is_acknowledged
+                        ? <button onClick={()=>ack(alert.id)} style={{ fontSize:10, background:'white', border:'1px solid #E2E8F0', borderRadius:6, padding:'2px 7px', cursor:'pointer', color:'#475569', fontWeight:600, flexShrink:0 }}>Ack</button>
+                        : <CheckCircle size={13} style={{ color:'#16A34A', flexShrink:0 }} />}
                     </div>
-                    <p className="text-slate-600 mb-1">{alert.camera_name}</p>
-                    <p className="text-slate-400">{timeAgo(alert.timestamp)}</p>
+                    <p style={{ fontSize:11, color:'#64748B' }}>{alert.camera_name}</p>
+                    <p style={{ fontSize:10, color:'#94A3B8', marginTop:2 }}>{timeAgo(alert.timestamp)}</p>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Camera Status */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4">
-            <h3 className="font-bold text-slate-800 mb-3 text-sm">Camera Status</h3>
-            <div className="space-y-2">
-              {cameras.map((cam) => (
-                <div key={cam.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${cam.status === 'live' ? 'bg-green-400' : 'bg-red-400'}`} />
+          {/* Camera status */}
+          <div className="card">
+            <p style={{ fontWeight:700, fontSize:13, color:'#1E293B', marginBottom:12 }}>Camera Status</p>
+            <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
+              {cameras.map((cam,i) => (
+                <div key={cam.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 0', borderBottom: i<cameras.length-1?'1px solid #F1F5F9':'none' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <span style={{ width:7, height:7, borderRadius:'50%', background: cam.status==='live'?'#4ADE80':'#EF4444', flexShrink:0 }} />
                     <div>
-                      <p className="text-xs font-semibold text-slate-700">{cam.name}</p>
-                      <p className="text-xs text-slate-400">{cam.id}</p>
+                      <p style={{ fontSize:12, fontWeight:600, color:'#1E293B' }}>{cam.name}</p>
+                      <p style={{ fontSize:10, color:'#94A3B8' }}>{cam.id}</p>
                     </div>
                   </div>
-                  <span className={`text-xs font-semibold ${cam.status === 'live' ? 'text-green-600' : 'text-red-500'}`}>
-                    {cam.status === 'live' ? 'ONLINE' : 'OFFLINE'}
+                  <span style={{ fontSize:11, fontWeight:700, color: cam.status==='live'?'#16A34A':'#EF4444' }}>
+                    {cam.status==='live'?'ONLINE':'OFFLINE'}
                   </span>
                 </div>
               ))}

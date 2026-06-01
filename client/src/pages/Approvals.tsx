@@ -1,91 +1,72 @@
 import { useState } from 'react';
 import { CheckCircle, XCircle, Phone, MapPin, Clock, Bell } from 'lucide-react';
 import { DEMO_VISITORS } from '@/data/demo';
-import { formatDateTime, timeAgo } from '@/lib/utils';
+import { timeAgo } from '@/lib/utils';
 import { statusBadge } from '@/components/ui/Badge';
 
 export default function Approvals() {
   const [visitors, setVisitors] = useState(DEMO_VISITORS);
+  const pending  = visitors.filter(v => v.status === 'pending');
+  const decided  = visitors.filter(v => v.status !== 'pending').slice(0, 6);
 
-  const pendingVisitors = visitors.filter(v => v.status === 'pending');
-  const recentApprovals = visitors.filter(v => v.status !== 'pending').slice(0, 6);
-
-  const handleAction = (id: string, action: 'approved' | 'rejected') => {
+  const handle = (id: string, action: 'approved' | 'rejected') =>
     setVisitors(visitors.map(v => v.id === id ? { ...v, status: action } : v));
-  };
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h2 className="text-xl font-bold text-slate-800">Resident Approvals</h2>
-        <p className="text-sm text-slate-500">Review and approve visitor entry requests</p>
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div className="page-header">
+        <div><h2>Resident Approvals</h2><p>Review and approve visitor entry requests</p></div>
       </div>
 
-      {/* Pending count banner */}
-      {pendingVisitors.length > 0 && (
-        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <Bell size={18} className="text-amber-600" />
+      {pending.length > 0 && (
+        <div style={{ display:'flex', alignItems:'center', gap:10, background:'#FFFBEB', border:'1px solid #FDE68A', borderRadius:12, padding:'12px 14px' }}>
+          <Bell size={16} style={{ color:'#D97706', flexShrink:0 }} />
           <div>
-            <p className="font-semibold text-amber-800 text-sm">{pendingVisitors.length} visitor(s) awaiting approval</p>
-            <p className="text-xs text-amber-600">Review and approve or reject each request below</p>
+            <p style={{ fontWeight:700, fontSize:13, color:'#92400E' }}>{pending.length} visitor(s) awaiting your approval</p>
+            <p style={{ fontSize:12, color:'#B45309' }}>Approve or reject each request below</p>
           </div>
         </div>
       )}
 
-      {/* Pending Cards */}
+      {/* Pending */}
       <div>
-        <h3 className="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">Pending Requests</h3>
-        {pendingVisitors.length === 0 ? (
-          <div className="bg-white rounded-xl p-10 text-center shadow-sm border border-slate-100">
-            <CheckCircle size={40} className="text-green-400 mx-auto mb-3" />
-            <p className="font-semibold text-slate-600">All caught up!</p>
-            <p className="text-sm text-slate-400">No pending visitor approvals</p>
+        <p className="section-label">Pending Requests</p>
+        {pending.length === 0 ? (
+          <div className="card" style={{ textAlign:'center', padding:40 }}>
+            <CheckCircle size={36} style={{ color:'#86EFAC', margin:'0 auto 10px' }} />
+            <p style={{ fontWeight:600, color:'#64748B' }}>All caught up! No pending approvals.</p>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-            {pendingVisitors.map((v) => (
-              <div key={v.id} className="bg-white rounded-xl p-5 shadow-sm border border-amber-100 hover:shadow-md transition-shadow">
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center text-blue-700 font-bold text-xl flex-shrink-0">
+          <div className="approval-grid">
+            {pending.map(v => (
+              <div key={v.id} className="card" style={{ borderColor:'#FDE68A' }}>
+                <div style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:14 }}>
+                  <div style={{ width:52, height:52, background:'linear-gradient(135deg,#DBEAFE,#BFDBFE)', borderRadius:14, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, fontSize:20, color:'#1D4ED8', flexShrink:0 }}>
                     {v.visitor_name.charAt(0)}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-slate-800 text-base">{v.visitor_name}</p>
-                    <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5"><Phone size={10} />{v.mobile}</p>
-                    <p className="text-xs text-blue-600 font-semibold flex items-center gap-1 mt-0.5"><MapPin size={10} />Flat {v.flat_number}</p>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <p style={{ fontWeight:700, fontSize:15, color:'#1E293B' }}>{v.visitor_name}</p>
+                    <p style={{ fontSize:12, color:'#64748B', display:'flex', alignItems:'center', gap:4 }}><Phone size={10}/>{v.mobile}</p>
+                    <p style={{ fontSize:12, color:'#2563EB', fontWeight:600, display:'flex', alignItems:'center', gap:4 }}><MapPin size={10}/>Flat {v.flat_number}</p>
                   </div>
-                  <span className="animate-pulse w-2 h-2 bg-amber-500 rounded-full mt-1" />
+                  <span style={{ width:8, height:8, background:'#F59E0B', borderRadius:'50%', flexShrink:0, animation:'pulse-dot 2s infinite' }} />
                 </div>
 
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500">Purpose</span>
-                    <span className="font-semibold text-slate-700">{v.purpose}</span>
-                  </div>
-                  {v.vehicle_number && (
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-500">Vehicle</span>
-                      <span className="font-semibold text-slate-700">{v.vehicle_number}</span>
+                <div style={{ display:'flex', flexDirection:'column', gap:7, marginBottom:14, background:'#F8FAFC', borderRadius:10, padding:'10px 12px' }}>
+                  {[['Purpose', v.purpose], ['Entry Time', timeAgo(v.entry_time)], ...(v.vehicle_number ? [['Vehicle', v.vehicle_number]] : [])].map(([k,val]) => (
+                    <div key={k} style={{ display:'flex', justifyContent:'space-between', fontSize:12 }}>
+                      <span style={{ color:'#94A3B8' }}>{k}</span>
+                      <span style={{ fontWeight:600, color:'#1E293B' }}>{val}</span>
                     </div>
-                  )}
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500">Entry Time</span>
-                    <span className="font-semibold text-slate-700 flex items-center gap-1"><Clock size={10} />{timeAgo(v.entry_time)}</span>
-                  </div>
+                  ))}
                 </div>
 
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleAction(v.id, 'approved')}
-                    className="flex-1 flex items-center justify-center gap-1.5 bg-green-600 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors"
-                  >
-                    <CheckCircle size={15} /> Approve
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                  <button onClick={() => handle(v.id,'approved')} className="btn btn-success" style={{ width:'100%', justifyContent:'center' }}>
+                    <CheckCircle size={14}/> Approve
                   </button>
-                  <button
-                    onClick={() => handleAction(v.id, 'rejected')}
-                    className="flex-1 flex items-center justify-center gap-1.5 bg-red-600 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors"
-                  >
-                    <XCircle size={15} /> Reject
+                  <button onClick={() => handle(v.id,'rejected')} className="btn btn-danger" style={{ width:'100%', justifyContent:'center' }}>
+                    <XCircle size={14}/> Reject
                   </button>
                 </div>
               </div>
@@ -96,35 +77,31 @@ export default function Approvals() {
 
       {/* Recent Decisions */}
       <div>
-        <h3 className="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">Recent Decisions</h3>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 border-b border-slate-100">
-              <tr>
-                {['Visitor', 'Flat', 'Purpose', 'Time', 'Status'].map(h => (
-                  <th key={h} className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {recentApprovals.map((v) => (
-                <tr key={v.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center text-slate-600 font-bold text-xs">
-                        {v.visitor_name.charAt(0)}
+        <p className="section-label">Recent Decisions</p>
+        <div className="card" style={{ padding:0, overflow:'hidden' }}>
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead><tr>{['Visitor','Flat','Purpose','Time','Status'].map(h=><th key={h}>{h}</th>)}</tr></thead>
+              <tbody>
+                {decided.map(v => (
+                  <tr key={v.id}>
+                    <td>
+                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <div style={{ width:30, height:30, background:'#F1F5F9', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, fontSize:12, color:'#475569', flexShrink:0 }}>
+                          {v.visitor_name.charAt(0)}
+                        </div>
+                        <span style={{ fontWeight:500, fontSize:13 }}>{v.visitor_name}</span>
                       </div>
-                      <span className="font-medium text-slate-700">{v.visitor_name}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-slate-600">{v.flat_number}</td>
-                  <td className="px-4 py-3 text-slate-600">{v.purpose}</td>
-                  <td className="px-4 py-3 text-slate-400 text-xs">{timeAgo(v.entry_time)}</td>
-                  <td className="px-4 py-3">{statusBadge(v.status)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td style={{ fontSize:13 }}>{v.flat_number}</td>
+                    <td style={{ fontSize:13 }}>{v.purpose}</td>
+                    <td style={{ fontSize:12, color:'#94A3B8' }}>{timeAgo(v.entry_time)}</td>
+                    <td>{statusBadge(v.status)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
