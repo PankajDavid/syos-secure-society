@@ -22,14 +22,20 @@ export default function AppLayout() {
   const title = pageTitles[location.pathname] || 'SYOS Secure Society';
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-100">
+    <div className="app-shell">
+      {/* Overlay for mobile */}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? 'show' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex-1 flex flex-col lg:ml-64 overflow-hidden">
+      <div className="main-content">
         <Topbar onMenuClick={() => setSidebarOpen(true)} title={title} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        <div className="page-area">
           <Outlet />
-        </main>
+        </div>
       </div>
     </div>
   );

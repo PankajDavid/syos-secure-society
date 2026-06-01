@@ -1,5 +1,4 @@
 import { Link, useLocation } from 'react-router-dom';
-import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, Users, UserCheck, Shield, Clock,
   AlertTriangle, Eye, Camera, QrCode, FileText, Home, X
@@ -27,82 +26,94 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const location = useLocation();
 
   return (
-    <>
-      {/* Overlay */}
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+    <aside className={`sidebar ${open ? 'open' : ''}`}>
+      {/* Logo */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '20px 20px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)',
+        flexShrink: 0,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{
+            width: 36, height: 36, background: '#2563EB', borderRadius: 10,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <Shield size={18} color="white" />
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: 'white', lineHeight: 1.2 }}>SYOS</div>
+            <div style={{ fontSize: 11, color: '#94A3B8', lineHeight: 1.2 }}>Secure Society</div>
+          </div>
+        </div>
+        <button
           onClick={onClose}
-        />
-      )}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8',
+            padding: 4, borderRadius: 6, display: 'flex',
+          }}
+          className="lg-hidden-btn"
+        >
+          <X size={18} />
+        </button>
+      </div>
 
-      {/* Sidebar */}
-      <aside className={cn(
-        "fixed top-0 left-0 h-full w-64 z-30 flex flex-col transition-transform duration-300",
-        "bg-[#0F172A] text-white",
-        open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-      )}>
-        {/* Logo */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Shield size={20} className="text-white" />
-            </div>
-            <div>
-              <div className="font-bold text-base leading-tight">SYOS</div>
-              <div className="text-xs text-slate-400">Secure Society</div>
-            </div>
-          </div>
-          <button onClick={onClose} className="lg:hidden text-slate-400 hover:text-white">
-            <X size={18} />
-          </button>
+      {/* Society badge */}
+      <div style={{ padding: '12px 16px' }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: 10, padding: '10px 12px',
+        }}>
+          <div style={{ fontSize: 10, color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>Active Society</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'white', lineHeight: 1.3 }}>AWGHS</div>
+          <div style={{ fontSize: 11, color: '#64748B' }}>Sector 27, Panchkula</div>
         </div>
+      </div>
 
-        {/* Society Info */}
-        <div className="px-4 py-3 mx-3 mt-3 rounded-lg bg-white/5 border border-white/10">
-          <div className="text-xs text-slate-400 mb-1">Active Society</div>
-          <div className="text-sm font-medium leading-tight">AWGHS</div>
-          <div className="text-xs text-slate-400">Sector 27, Panchkula</div>
+      {/* Nav */}
+      <nav style={{ flex: 1, padding: '4px 12px', overflowY: 'auto' }}>
+        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', padding: '8px 8px 6px' }}>
+          Main Menu
         </div>
+        <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {navItems.map((item) => {
+            const active = location.pathname === item.path;
+            return (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  onClick={onClose}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '9px 10px', borderRadius: 8,
+                    fontSize: 13, fontWeight: 500, textDecoration: 'none',
+                    transition: 'all 0.15s',
+                    background: active ? '#2563EB' : 'transparent',
+                    color: active ? 'white' : '#94A3B8',
+                  }}
+                  onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.07)'; }}
+                  onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                >
+                  <item.icon size={17} style={{ flexShrink: 0 }} />
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
 
-        {/* Nav */}
-        <nav className="flex-1 px-3 py-4 overflow-y-auto scrollbar-thin">
-          <div className="text-xs text-slate-500 font-semibold uppercase tracking-wider px-3 mb-2">Main Menu</div>
-          <ul className="space-y-1">
-            {navItems.map((item) => {
-              const active = location.pathname === item.path;
-              return (
-                <li key={item.path}>
-                  <Link
-                    to={item.path}
-                    onClick={onClose}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
-                      active
-                        ? "bg-blue-600 text-white shadow-lg"
-                        : "text-slate-300 hover:bg-white/10 hover:text-white"
-                    )}
-                  >
-                    <item.icon size={18} />
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        {/* Footer */}
-        <div className="px-4 py-4 border-t border-white/10">
-          <Link to="/" className="flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors">
-            <Home size={14} />
-            Back to Home
-          </Link>
-          <div className="mt-3 text-xs text-slate-500">
-            © 2025 SYOS Enterprises
-          </div>
-        </div>
-      </aside>
-    </>
+      {/* Footer */}
+      <div style={{
+        padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.08)', flexShrink: 0,
+      }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#64748B', textDecoration: 'none' }}
+          onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'white'}
+          onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#64748B'}
+        >
+          <Home size={13} /> Back to Home
+        </Link>
+        <div style={{ marginTop: 10, fontSize: 11, color: '#334155' }}>© 2025 SYOS Enterprises</div>
+      </div>
+    </aside>
   );
 }

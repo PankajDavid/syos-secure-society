@@ -1,4 +1,4 @@
-import { Menu, Bell, ChevronDown, Shield } from 'lucide-react';
+import { Menu, Bell, Shield, ChevronDown } from 'lucide-react';
 import { useRole } from '@/hooks/useRole';
 
 interface TopbarProps {
@@ -6,11 +6,11 @@ interface TopbarProps {
   title: string;
 }
 
-const roleColors: Record<string, string> = {
-  super_admin: 'bg-purple-100 text-purple-700',
-  society_admin: 'bg-blue-100 text-blue-700',
-  guard: 'bg-green-100 text-green-700',
-  resident: 'bg-orange-100 text-orange-700',
+const roleColors: Record<string, { bg: string; text: string }> = {
+  super_admin:    { bg: '#EDE9FE', text: '#6D28D9' },
+  society_admin:  { bg: '#DBEAFE', text: '#1D4ED8' },
+  guard:          { bg: '#DCFCE7', text: '#15803D' },
+  resident:       { bg: '#FEF3C7', text: '#B45309' },
 };
 
 const roleLabels: Record<string, string> = {
@@ -20,27 +20,41 @@ const roleLabels: Record<string, string> = {
   resident: 'Resident',
 };
 
+type Role = 'super_admin' | 'society_admin' | 'guard' | 'resident';
+
 export default function Topbar({ onMenuClick, title }: TopbarProps) {
   const { role, setRole } = useRole();
+  const rc = roleColors[role];
 
   return (
-    <header className="sticky top-0 z-10 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm">
-      <div className="flex items-center gap-3">
+    <header className="topbar">
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* Hamburger — visible on mobile */}
         <button
           onClick={onMenuClick}
-          className="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            padding: 7, borderRadius: 8, display: 'flex', alignItems: 'center',
+            color: '#64748B',
+          }}
+          className="mobile-menu-btn"
         >
-          <Menu size={20} className="text-slate-600" />
+          <Menu size={20} />
         </button>
-        <h1 className="text-base font-semibold text-slate-800">{title}</h1>
+        <h1 style={{ fontSize: 15, fontWeight: 700, color: '#1E293B', whiteSpace: 'nowrap' }}>{title}</h1>
       </div>
 
-      <div className="flex items-center gap-3">
-        {/* Demo Role Switcher */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {/* Role switcher */}
         <select
           value={role}
-          onChange={(e) => setRole(e.target.value as any)}
-          className={`text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer ${roleColors[role]}`}
+          onChange={e => setRole(e.target.value as Role)}
+          style={{
+            fontSize: 12, fontWeight: 600, padding: '4px 8px',
+            borderRadius: 999, border: 'none', cursor: 'pointer',
+            background: rc.bg, color: rc.text, fontFamily: 'inherit',
+            outline: 'none',
+          }}
         >
           <option value="super_admin">Super Admin</option>
           <option value="society_admin">Society Admin</option>
@@ -48,20 +62,34 @@ export default function Topbar({ onMenuClick, title }: TopbarProps) {
           <option value="resident">Resident</option>
         </select>
 
-        <button className="relative p-2 rounded-lg hover:bg-slate-100 transition-colors">
-          <Bell size={18} className="text-slate-600" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+        {/* Notification bell */}
+        <button style={{
+          position: 'relative', background: 'none', border: 'none', cursor: 'pointer',
+          padding: 7, borderRadius: 8, color: '#64748B', display: 'flex',
+        }}>
+          <Bell size={18} />
+          <span style={{
+            position: 'absolute', top: 6, right: 6, width: 7, height: 7,
+            background: '#EF4444', borderRadius: '50%', border: '1.5px solid white',
+          }} />
         </button>
 
-        <div className="flex items-center gap-2 pl-3 border-l border-slate-200">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <Shield size={16} className="text-white" />
+        {/* User */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          paddingLeft: 10, borderLeft: '1px solid #E2E8F0',
+        }}>
+          <div style={{
+            width: 32, height: 32, background: '#2563EB', borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <Shield size={15} color="white" />
           </div>
-          <div className="hidden sm:block">
-            <div className="text-xs font-semibold text-slate-800">Demo User</div>
-            <div className="text-xs text-slate-500">{roleLabels[role]}</div>
+          <div style={{ display: 'flex', flexDirection: 'column' }} className="hide-mobile">
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#1E293B', lineHeight: 1.2 }}>Demo User</span>
+            <span style={{ fontSize: 11, color: '#94A3B8', lineHeight: 1.2 }}>{roleLabels[role]}</span>
           </div>
-          <ChevronDown size={14} className="text-slate-400" />
+          <ChevronDown size={14} color="#94A3B8" />
         </div>
       </div>
     </header>

@@ -1,4 +1,4 @@
-import { Shield, Users, AlertTriangle, Camera, Clock, Eye, CheckCircle, TrendingUp } from 'lucide-react';
+import { Shield, Users, AlertTriangle, Camera, Clock, Eye } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend
@@ -9,95 +9,110 @@ import {
   VISITOR_CHART_DATA, INCIDENT_CHART_DATA, DEMO_VISITORS,
   DEMO_INCIDENTS, DEMO_OBSERVATIONS, DEMO_CAMERA_ALERTS, SOCIETY
 } from '@/data/demo';
-import { timeAgo, formatDateTime } from '@/lib/utils';
+import { timeAgo } from '@/lib/utils';
 
 const PIE_COLORS = ['#16A34A', '#F59E0B', '#DC2626'];
-
 const visitorStatusData = [
   { name: 'Approved', value: 89 },
-  { name: 'Pending', value: 7 },
+  { name: 'Pending',  value: 7  },
   { name: 'Rejected', value: 31 },
 ];
 
+const S: Record<string, React.CSSProperties> = {
+  page:      { display: 'flex', flexDirection: 'column', gap: 20 },
+  section:   { display: 'flex', flexDirection: 'column', gap: 20 },
+  row:       { display: 'grid', gap: 20 },
+  card:      { background: 'white', borderRadius: 14, padding: 20, border: '1px solid #F1F5F9', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' },
+  cardTitle: { fontSize: 15, fontWeight: 700, color: '#1E293B', marginBottom: 2 },
+  cardSub:   { fontSize: 12, color: '#94A3B8', marginBottom: 16 },
+};
+
 export default function Dashboard() {
   const recentVisitors = DEMO_VISITORS.slice(0, 5);
-  const openIncidents = DEMO_INCIDENTS.filter(i => i.status === 'open' || i.status === 'in_progress');
-  const openObservations = DEMO_OBSERVATIONS.filter(o => o.status === 'open');
-  const pendingAlerts = DEMO_CAMERA_ALERTS.filter(a => !a.is_acknowledged);
+  const openIncidents  = DEMO_INCIDENTS.filter(i => i.status === 'open' || i.status === 'in_progress');
+  const pendingAlerts  = DEMO_CAMERA_ALERTS.filter(a => !a.is_acknowledged);
+  const openObs        = DEMO_OBSERVATIONS.filter(o => o.status !== 'resolved');
 
   return (
-    <div className="space-y-6">
+    <div style={S.page}>
+
       {/* Society Banner */}
-      <div className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white rounded-2xl p-5 shadow-lg">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="text-xs text-slate-400 mb-0.5">Active Society</div>
-            <h2 className="text-xl font-bold">{SOCIETY.name}</h2>
-            <p className="text-slate-300 text-sm">{SOCIETY.location}</p>
-          </div>
-          <div className="flex gap-4">
-            {[
-              { label: 'Guards', value: SOCIETY.totalGuards },
-              { label: 'Flats', value: SOCIETY.totalFlats },
-              { label: 'Residents', value: SOCIETY.totalResidents },
-            ].map(s => (
-              <div key={s.label} className="text-center bg-white/5 border border-white/10 rounded-xl px-4 py-2">
-                <div className="text-xl font-bold text-blue-400">{s.value}</div>
-                <div className="text-xs text-slate-400">{s.label}</div>
-              </div>
-            ))}
-          </div>
+      <div style={{
+        background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+        borderRadius: 16, padding: '20px 24px', color: 'white',
+        display: 'flex', flexWrap: 'wrap', gap: 16,
+        alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <div>
+          <p style={{ fontSize: 11, color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Active Society</p>
+          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 2 }}>{SOCIETY.name}</h2>
+          <p style={{ fontSize: 13, color: '#94A3B8' }}>{SOCIETY.location}</p>
+        </div>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          {[
+            { label: 'Guards', value: SOCIETY.totalGuards },
+            { label: 'Flats', value: SOCIETY.totalFlats },
+            { label: 'Residents', value: SOCIETY.totalResidents },
+          ].map(s => (
+            <div key={s.label} style={{
+              textAlign: 'center', background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '10px 18px',
+            }}>
+              <div style={{ fontSize: 22, fontWeight: 800, color: '#60A5FA' }}>{s.value}</div>
+              <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>{s.label}</div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <StatCard title="Guards On Duty" value={14} icon={Shield} iconBg="bg-blue-50" iconColor="text-blue-600" trend="+2 vs yesterday" trendUp />
-        <StatCard title="Visitors Today" value={127} icon={Users} iconBg="bg-green-50" iconColor="text-green-600" trend="+12% this week" trendUp />
-        <StatCard title="Open Incidents" value={3} icon={AlertTriangle} iconBg="bg-red-50" iconColor="text-red-600" trend="1 critical" trendUp={false} alert />
-        <StatCard title="CCTV Alerts" value={2} icon={Camera} iconBg="bg-purple-50" iconColor="text-purple-600" trend="Unacknowledged" trendUp={false} />
-        <StatCard title="Pending Approvals" value={7} icon={Clock} iconBg="bg-amber-50" iconColor="text-amber-600" trend="Awaiting response" trendUp={false} />
-        <StatCard title="Observations" value={4} icon={Eye} iconBg="bg-teal-50" iconColor="text-teal-600" trend="1 critical" trendUp={false} />
+      {/* KPI Cards */}
+      <div className="stats-grid">
+        <StatCard title="Guards On Duty"     value={14}  icon={Shield}        iconBg="#EFF6FF" iconColor="#2563EB" trend="+2 vs yesterday" trendUp />
+        <StatCard title="Visitors Today"     value={127} icon={Users}         iconBg="#F0FDF4" iconColor="#16A34A" trend="+12% this week"  trendUp />
+        <StatCard title="Open Incidents"     value={3}   icon={AlertTriangle} iconBg="#FFF1F2" iconColor="#E11D48" trend="1 critical"      trendUp={false} alert />
+        <StatCard title="CCTV Alerts"        value={2}   icon={Camera}        iconBg="#F5F3FF" iconColor="#7C3AED" trend="Unacknowledged"  trendUp={false} />
+        <StatCard title="Pending Approvals"  value={7}   icon={Clock}         iconBg="#FFFBEB" iconColor="#D97706" trend="Awaiting action"  trendUp={false} />
+        <StatCard title="Observations"       value={4}   icon={Eye}           iconBg="#F0FDFA" iconColor="#0D9488" trend="1 critical"      trendUp={false} />
       </div>
 
       {/* Charts Row */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }} className="charts-row">
         {/* Visitor Trend */}
-        <div className="lg:col-span-2 bg-white rounded-xl p-5 shadow-sm border border-slate-100">
-          <div className="flex items-center justify-between mb-4">
+        <div style={S.card}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
             <div>
-              <h3 className="font-bold text-slate-800">Visitor Trend</h3>
-              <p className="text-xs text-slate-400">Last 7 days</p>
+              <p style={S.cardTitle}>Visitor Trend</p>
+              <p style={S.cardSub}>Last 7 days</p>
             </div>
-            <span className="text-xs bg-green-50 text-green-600 px-2 py-1 rounded-full font-medium">+8% this week</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: '#16A34A', background: '#F0FDF4', padding: '3px 8px', borderRadius: 999 }}>+8% this week</span>
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={VISITOR_CHART_DATA}>
               <defs>
-                <linearGradient id="visitorGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#2563EB" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
+                <linearGradient id="visGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%"  stopColor="#2563EB" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#2563EB" stopOpacity={0}    />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: 12 }} />
-              <Area type="monotone" dataKey="visitors" stroke="#2563EB" fill="url(#visitorGrad)" strokeWidth={2.5} dot={{ fill: '#2563EB', r: 3 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+              <XAxis dataKey="day"      tick={{ fontSize: 11, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 12, fontFamily: 'Inter, sans-serif' }} />
+              <Area type="monotone" dataKey="visitors" stroke="#2563EB" fill="url(#visGrad)" strokeWidth={2.5} dot={{ fill: '#2563EB', r: 3 }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
         {/* Visitor Status Pie */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
-          <h3 className="font-bold text-slate-800 mb-1">Visitor Status</h3>
-          <p className="text-xs text-slate-400 mb-4">Today's breakdown</p>
-          <ResponsiveContainer width="100%" height={180}>
+        <div style={S.card}>
+          <p style={S.cardTitle}>Visitor Status</p>
+          <p style={S.cardSub}>Today's breakdown</p>
+          <ResponsiveContainer width="100%" height={190}>
             <PieChart>
-              <Pie data={visitorStatusData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={3} dataKey="value">
+              <Pie data={visitorStatusData} cx="50%" cy="50%" innerRadius={52} outerRadius={78} paddingAngle={3} dataKey="value">
                 {visitorStatusData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i]} />)}
               </Pie>
-              <Legend iconType="circle" iconSize={8} formatter={(v) => <span style={{ fontSize: 12, color: '#64748b' }}>{v}</span>} />
+              <Legend iconType="circle" iconSize={8} formatter={v => <span style={{ fontSize: 12, color: '#64748B' }}>{v}</span>} />
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
@@ -105,45 +120,46 @@ export default function Dashboard() {
       </div>
 
       {/* Incident Chart + Activity */}
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-xl p-5 shadow-sm border border-slate-100">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-slate-800">Incident Overview</h3>
-            <p className="text-xs text-slate-400">Last 6 months</p>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }} className="charts-row">
+        {/* Incident Bar Chart */}
+        <div style={S.card}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <p style={S.cardTitle}>Incident Overview</p>
+            <p style={{ fontSize: 12, color: '#94A3B8' }}>Last 6 months</p>
           </div>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={INCIDENT_CHART_DATA} barSize={14}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: 12 }} />
-              <Bar dataKey="incidents" fill="#DC2626" radius={[4, 4, 0, 0]} name="Incidents" opacity={0.8} />
-              <Bar dataKey="resolved" fill="#16A34A" radius={[4, 4, 0, 0]} name="Resolved" />
-              <Legend iconType="circle" iconSize={8} formatter={(v) => <span style={{ fontSize: 12, color: '#64748b' }}>{v}</span>} />
+            <BarChart data={INCIDENT_CHART_DATA} barSize={12}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+              <XAxis dataKey="month"    tick={{ fontSize: 11, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #E2E8F0', fontSize: 12 }} />
+              <Bar dataKey="incidents" fill="#EF4444" radius={[4,4,0,0]} name="Incidents" opacity={0.85} />
+              <Bar dataKey="resolved"  fill="#16A34A" radius={[4,4,0,0]} name="Resolved"           />
+              <Legend iconType="circle" iconSize={8} formatter={v => <span style={{ fontSize: 12, color: '#64748B' }}>{v}</span>} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Recent Activity */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
-          <h3 className="font-bold text-slate-800 mb-4">Recent Activity</h3>
-          <div className="space-y-3">
+        {/* Activity Feed */}
+        <div style={S.card}>
+          <p style={{ ...S.cardTitle, marginBottom: 16 }}>Recent Activity</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {[
-              ...recentVisitors.slice(0, 3).map(v => ({
-                type: 'visitor', label: v.visitor_name, sub: `${v.purpose} • ${v.flat_number}`, time: v.entry_time, status: v.status
-              })),
-              ...openIncidents.slice(0, 2).map(i => ({
-                type: 'incident', label: i.title, sub: i.category, time: i.created_at, status: i.status
-              })),
-            ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 6).map((item, idx) => (
-              <div key={idx} className="flex items-start gap-3">
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${item.type === 'visitor' ? 'bg-blue-50' : 'bg-red-50'}`}>
-                  {item.type === 'visitor' ? <Users size={13} className="text-blue-600" /> : <AlertTriangle size={13} className="text-red-600" />}
+              ...recentVisitors.slice(0, 3).map(v => ({ type: 'visitor', label: v.visitor_name, sub: `${v.purpose} · ${v.flat_number}`, time: v.entry_time, status: v.status })),
+              ...openIncidents.slice(0, 2).map(i  => ({ type: 'incident', label: i.title, sub: i.category, time: i.created_at, status: i.status })),
+            ].sort((a,b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0,6).map((item, idx) => (
+              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
+                  width: 32, height: 32, borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  background: item.type === 'visitor' ? '#EFF6FF' : '#FFF1F2',
+                }}>
+                  {item.type === 'visitor'
+                    ? <Users size={13} style={{ color: '#2563EB' }} />
+                    : <AlertTriangle size={13} style={{ color: '#E11D48' }} />}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-slate-800 truncate">{item.label}</p>
-                  <p className="text-xs text-slate-400 truncate">{item.sub}</p>
-                  <p className="text-xs text-slate-300">{timeAgo(item.time)}</p>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</p>
+                  <p style={{ fontSize: 11, color: '#94A3B8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.sub} · {timeAgo(item.time)}</p>
                 </div>
                 {statusBadge(item.status)}
               </div>
@@ -153,44 +169,55 @@ export default function Dashboard() {
       </div>
 
       {/* Alerts Strip */}
-      <div className="grid sm:grid-cols-2 gap-4">
-        {/* Camera Alerts */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-2 mb-3">
-            <Camera size={16} className="text-purple-600" />
-            <h3 className="font-bold text-slate-800">CCTV Alerts</h3>
-            <span className="ml-auto text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full font-medium">{pendingAlerts.length} unread</span>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+        {/* CCTV Alerts */}
+        <div style={S.card}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+            <Camera size={15} style={{ color: '#7C3AED' }} />
+            <span style={{ fontWeight: 700, fontSize: 14, color: '#1E293B' }}>CCTV Alerts</span>
+            <span style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: '#EF4444', background: '#FFF1F2', padding: '2px 8px', borderRadius: 999 }}>{pendingAlerts.length} unread</span>
           </div>
-          <div className="space-y-2">
-            {DEMO_CAMERA_ALERTS.slice(0, 3).map((a) => (
-              <div key={a.id} className={`flex items-start gap-3 p-2.5 rounded-lg ${a.is_acknowledged ? 'bg-slate-50' : 'bg-red-50 border border-red-100'}`}>
-                <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${a.is_acknowledged ? 'bg-slate-400' : 'bg-red-500 animate-pulse'}`} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-slate-800">{a.alert_type}</p>
-                  <p className="text-xs text-slate-500 truncate">{a.camera_name}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {DEMO_CAMERA_ALERTS.slice(0,3).map(a => (
+              <div key={a.id} style={{
+                display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 9,
+                background: a.is_acknowledged ? '#F8FAFC' : '#FFF1F2',
+                border: `1px solid ${a.is_acknowledged ? '#F1F5F9' : '#FECDD3'}`,
+              }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: a.is_acknowledged ? '#CBD5E1' : '#EF4444', flexShrink: 0, animation: a.is_acknowledged ? 'none' : 'pulse-dot 2s infinite' }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.alert_type}</p>
+                  <p style={{ fontSize: 11, color: '#94A3B8' }}>{a.camera_name}</p>
                 </div>
-                <span className="text-xs text-slate-400 whitespace-nowrap">{timeAgo(a.timestamp)}</span>
+                <span style={{ fontSize: 11, color: '#94A3B8', whiteSpace: 'nowrap' }}>{timeAgo(a.timestamp)}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Critical Observations */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-2 mb-3">
-            <Eye size={16} className="text-teal-600" />
-            <h3 className="font-bold text-slate-800">Guard Observations</h3>
-            <span className="ml-auto text-xs bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full font-medium">{openObservations.length} open</span>
+        {/* Observations */}
+        <div style={S.card}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+            <Eye size={15} style={{ color: '#0D9488' }} />
+            <span style={{ fontWeight: 700, fontSize: 14, color: '#1E293B' }}>Guard Observations</span>
+            <span style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: '#D97706', background: '#FFFBEB', padding: '2px 8px', borderRadius: 999 }}>{openObs.length} open</span>
           </div>
-          <div className="space-y-2">
-            {DEMO_OBSERVATIONS.filter(o => o.status !== 'resolved').slice(0, 3).map((o) => (
-              <div key={o.id} className={`flex items-start gap-3 p-2.5 rounded-lg ${o.priority === 'critical' ? 'bg-red-50 border border-red-100' : 'bg-slate-50'}`}>
-                <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${o.priority === 'critical' ? 'bg-red-500 animate-pulse' : o.priority === 'high' ? 'bg-amber-500' : 'bg-blue-500'}`} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-slate-800">{o.category}</p>
-                  <p className="text-xs text-slate-500 truncate">{o.location}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {DEMO_OBSERVATIONS.filter(o => o.status !== 'resolved').slice(0,3).map(o => (
+              <div key={o.id} style={{
+                display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 9,
+                background: o.priority === 'critical' ? '#FFF1F2' : '#F8FAFC',
+                border: `1px solid ${o.priority === 'critical' ? '#FECDD3' : '#F1F5F9'}`,
+              }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
+                  background: o.priority === 'critical' ? '#EF4444' : o.priority === 'high' ? '#F59E0B' : '#3B82F6',
+                  animation: o.priority === 'critical' ? 'pulse-dot 2s infinite' : 'none',
+                }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.category}</p>
+                  <p style={{ fontSize: 11, color: '#94A3B8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.location}</p>
                 </div>
-                <span className="text-xs text-slate-400 whitespace-nowrap">{timeAgo(o.created_at)}</span>
+                <span style={{ fontSize: 11, color: '#94A3B8', whiteSpace: 'nowrap' }}>{timeAgo(o.created_at)}</span>
               </div>
             ))}
           </div>
