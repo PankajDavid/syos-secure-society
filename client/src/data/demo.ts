@@ -1,5 +1,95 @@
 // Demo data used when API is not connected
 
+export type PassStatus = 'active' | 'used' | 'expired' | 'cancelled';
+
+export interface VisitorPass {
+  id: string;
+  code: string;
+  flat_number: string;
+  block: string;
+  resident_name: string;
+  resident_phone: string;
+  visitor_name: string;
+  visitor_mobile: string;
+  purpose: string;
+  valid_from: string;
+  valid_until: string;
+  status: PassStatus;
+  used_at: string | null;
+  vehicle_number?: string | null;
+  created_at: string;
+}
+
+export const DEMO_PASSES: VisitorPass[] = [
+  {
+    id: 'p1', code: 'APX471',
+    flat_number: 'B-204', block: 'B',
+    resident_name: 'Col. Rajiv Sharma', resident_phone: '9810001001',
+    visitor_name: 'Amit Patel', visitor_mobile: '9811223344',
+    purpose: 'Personal Visit',
+    valid_from: new Date(Date.now() - 2 * 3600000).toISOString(),
+    valid_until: new Date(Date.now() + 4 * 3600000).toISOString(),
+    status: 'active', used_at: null, vehicle_number: null,
+    created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
+  },
+  {
+    id: 'p2', code: 'QRT892',
+    flat_number: 'A-101', block: 'A',
+    resident_name: 'Mrs. Sunita Verma', resident_phone: '9810001002',
+    visitor_name: 'Rajesh Delivery', visitor_mobile: '9811223345',
+    purpose: 'Courier / Delivery',
+    valid_from: new Date(Date.now() - 3600000).toISOString(),
+    valid_until: new Date(Date.now() + 3 * 3600000).toISOString(),
+    status: 'used', used_at: new Date(Date.now() - 30 * 60000).toISOString(),
+    vehicle_number: 'HR26AB4567',
+    created_at: new Date(Date.now() - 3600000).toISOString(),
+  },
+  {
+    id: 'p3', code: 'MNB556',
+    flat_number: 'C-305', block: 'C',
+    resident_name: 'Brig. Anil Kumar', resident_phone: '9810001003',
+    visitor_name: 'Priya Mehta', visitor_mobile: '9811223346',
+    purpose: 'Domestic Help',
+    valid_from: new Date(Date.now() - 6 * 3600000).toISOString(),
+    valid_until: new Date(Date.now() - 3600000).toISOString(),
+    status: 'expired', used_at: null, vehicle_number: null,
+    created_at: new Date(Date.now() - 6 * 3600000).toISOString(),
+  },
+  {
+    id: 'p4', code: 'ZXK234',
+    flat_number: 'D-410', block: 'D',
+    resident_name: 'Maj. Deepak Singh', resident_phone: '9810001004',
+    visitor_name: 'Ramesh Plumber', visitor_mobile: '9811223347',
+    purpose: 'Maintenance',
+    valid_from: new Date(Date.now() + 3600000).toISOString(),
+    valid_until: new Date(Date.now() + 5 * 3600000).toISOString(),
+    status: 'active', used_at: null, vehicle_number: null,
+    created_at: new Date(Date.now() - 30 * 60000).toISOString(),
+  },
+  {
+    id: 'p5', code: 'LPQ781',
+    flat_number: 'B-102', block: 'B',
+    resident_name: 'Lt. Col. Vinod Nair', resident_phone: '9810001005',
+    visitor_name: 'Sanjay Guest', visitor_mobile: '9811223348',
+    purpose: 'Personal Visit',
+    valid_from: new Date(Date.now() - 3 * 3600000).toISOString(),
+    valid_until: new Date(Date.now() + 3600000).toISOString(),
+    status: 'cancelled', used_at: null, vehicle_number: null,
+    created_at: new Date(Date.now() - 3 * 3600000).toISOString(),
+  },
+  {
+    id: 'p6', code: 'GTW945',
+    flat_number: 'A-203', block: 'A',
+    resident_name: 'Mrs. Kavitha Rajan', resident_phone: '9810001006',
+    visitor_name: 'Dr. Suresh Nair', visitor_mobile: '9811223349',
+    purpose: 'Medical / Doctor Visit',
+    valid_from: new Date(Date.now() - 10 * 60000).toISOString(),
+    valid_until: new Date(Date.now() + 2 * 3600000).toISOString(),
+    status: 'active', used_at: null, vehicle_number: null,
+    created_at: new Date(Date.now() - 10 * 60000).toISOString(),
+  },
+];
+
 export const SOCIETY = {
   name: 'Army Welfare Group Housing Society',
   location: 'Sector 27, Panchkula, Haryana',

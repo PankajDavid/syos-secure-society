@@ -14,6 +14,7 @@ import incidentsRouter from './routes/incidents';
 import observationsRouter from './routes/observations';
 import cameraAlertsRouter from './routes/cameraAlerts';
 import reportsRouter from './routes/reports';
+import passesRouter from './routes/passes';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use('/api/incidents', incidentsRouter);
 app.use('/api/observations', observationsRouter);
 app.use('/api/camera-alerts', cameraAlertsRouter);
 app.use('/api/reports', reportsRouter);
+app.use('/api/passes', passesRouter);
 
 app.get('/api/health', (_, res) => {
   res.json({ status: 'ok', service: 'SYOS Secure Society API', timestamp: new Date().toISOString() });

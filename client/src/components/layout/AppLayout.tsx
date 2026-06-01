@@ -14,6 +14,8 @@ const pageTitles: Record<string, string> = {
   '/cctv': 'CCTV Monitoring',
   '/qr-verify': 'QR Verification',
   '/reports': 'Reports & Analytics',
+  '/passes': 'Pre-Approved Visitor Codes',
+  '/gate': 'Gate — Code Verification',
 };
 
 export default function AppLayout() {

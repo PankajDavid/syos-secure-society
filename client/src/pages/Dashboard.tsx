@@ -1,4 +1,4 @@
-import { Shield, Users, AlertTriangle, Camera, Clock, Eye } from 'lucide-react';
+import { Shield, Users, AlertTriangle, Camera, Clock, Eye, Key, CheckCircle as Check } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend
@@ -7,8 +7,9 @@ import StatCard from '@/components/ui/StatCard';
 import { statusBadge } from '@/components/ui/Badge';
 import {
   VISITOR_CHART_DATA, INCIDENT_CHART_DATA, DEMO_VISITORS,
-  DEMO_INCIDENTS, DEMO_OBSERVATIONS, DEMO_CAMERA_ALERTS, SOCIETY
+  DEMO_INCIDENTS, DEMO_OBSERVATIONS, DEMO_CAMERA_ALERTS, SOCIETY, DEMO_PASSES
 } from '@/data/demo';
+import { Link } from 'react-router-dom';
 import { timeAgo } from '@/lib/utils';
 
 const PIE_COLORS = ['#16A34A', '#F59E0B', '#DC2626'];
@@ -167,6 +168,75 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Pre-Approved Passes SOC Widget */}
+      {(() => {
+        const activePasses  = DEMO_PASSES.filter(p => p.status === 'active').length;
+        const usedToday     = DEMO_PASSES.filter(p => p.status === 'used').length;
+        const expiredUnused = DEMO_PASSES.filter(p => p.status === 'expired').length;
+        return (
+          <div style={S.card}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 36, height: 36, background: '#EFF6FF', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Key size={17} style={{ color: '#2563EB' }} />
+              </div>
+              <div>
+                <p style={{ fontWeight: 700, fontSize: 14, color: '#1E293B' }}>Pre-Approved Visitor Codes</p>
+                <p style={{ fontSize: 11, color: '#94A3B8' }}>Resident-generated entry passes today</p>
+              </div>
+              <Link to="/passes" style={{ marginLeft: 'auto', fontSize: 12, color: '#2563EB', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                Manage →
+              </Link>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 14 }}>
+              {[
+                { label: 'Active Passes',    value: activePasses,  bg: '#F0FDF4', c: '#15803D' },
+                { label: 'Used Today',       value: usedToday,     bg: '#EFF6FF', c: '#1D4ED8' },
+                { label: 'Expired Unused',   value: expiredUnused, bg: '#FFF7ED', c: '#C2410C' },
+              ].map(s => (
+                <div key={s.label} style={{ background: s.bg, borderRadius: 10, padding: '10px 8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: s.c }}>{s.value}</div>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: s.c, opacity: 0.75 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Live activity feed */}
+            <p style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#94A3B8', marginBottom: 8 }}>Live Activity</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+              {DEMO_PASSES.slice(0, 4).map(pass => (
+                <div key={pass.id} style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 9,
+                  background: pass.status === 'used' ? '#F0FDF4' : pass.status === 'active' ? '#F8FAFC' : '#FAFAFA',
+                  border: `1px solid ${pass.status === 'used' ? '#BBF7D0' : '#F1F5F9'}`,
+                }}>
+                  <span style={{
+                    width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+                    background: pass.status === 'active' ? '#16A34A' : pass.status === 'used' ? '#2563EB' : '#94A3B8',
+                  }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    {pass.status === 'used'
+                      ? <p style={{ fontSize: 12, color: '#15803D', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          Visitor entered using pre-approved code for Flat {pass.flat_number}
+                        </p>
+                      : <p style={{ fontSize: 12, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          Code <strong style={{ fontFamily: 'monospace' }}>{pass.code}</strong> — {pass.visitor_name} → Flat {pass.flat_number}
+                        </p>
+                    }
+                    <p style={{ fontSize: 10, color: '#94A3B8' }}>{pass.purpose} · {pass.status}</p>
+                  </div>
+                  <span style={{
+                    fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 999,
+                    background: pass.status === 'used' ? '#DCFCE7' : pass.status === 'active' ? '#DBEAFE' : '#F1F5F9',
+                    color: pass.status === 'used' ? '#15803D' : pass.status === 'active' ? '#1D4ED8' : '#64748B',
+                  }}>{pass.status}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Alerts Strip */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>

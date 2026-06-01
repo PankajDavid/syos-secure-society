@@ -13,6 +13,8 @@ import Observations from './pages/Observations';
 import CCTV from './pages/CCTV';
 import QRVerify from './pages/QRVerify';
 import Reports from './pages/Reports';
+import VisitorPasses from './pages/VisitorPasses';
+import GateVerify from './pages/GateVerify';
 
 type Role = 'super_admin' | 'society_admin' | 'guard' | 'resident';
 
@@ -35,6 +37,8 @@ export default function App() {
             <Route path="/cctv" element={<CCTV />} />
             <Route path="/qr-verify" element={<QRVerify />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/passes" element={<VisitorPasses />} />
+            <Route path="/gate" element={<GateVerify />} />
           </Route>
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

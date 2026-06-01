@@ -1,20 +1,22 @@
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Users, UserCheck, Shield, Clock,
-  AlertTriangle, Eye, Camera, QrCode, FileText, Home, X
+  AlertTriangle, Eye, Camera, QrCode, FileText, Home, X, Key, ShieldCheck
 } from 'lucide-react';
 
 const navItems = [
-  { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-  { label: 'Visitor Management', icon: Users, path: '/visitors' },
-  { label: 'Resident Approval', icon: UserCheck, path: '/approvals' },
-  { label: 'Guard Management', icon: Shield, path: '/guards' },
-  { label: 'Attendance', icon: Clock, path: '/attendance' },
-  { label: 'Incidents', icon: AlertTriangle, path: '/incidents' },
-  { label: 'Observations', icon: Eye, path: '/observations' },
-  { label: 'CCTV Monitoring', icon: Camera, path: '/cctv' },
-  { label: 'QR Verification', icon: QrCode, path: '/qr-verify' },
-  { label: 'Reports', icon: FileText, path: '/reports' },
+  { label: 'Dashboard',           icon: LayoutDashboard, path: '/dashboard',  group: 'main' },
+  { label: 'Visitor Management',  icon: Users,           path: '/visitors',   group: 'main' },
+  { label: 'Resident Approval',   icon: UserCheck,       path: '/approvals',  group: 'main' },
+  { label: 'Guard Management',    icon: Shield,          path: '/guards',     group: 'main' },
+  { label: 'Attendance',          icon: Clock,           path: '/attendance', group: 'main' },
+  { label: 'Incidents',           icon: AlertTriangle,   path: '/incidents',  group: 'main' },
+  { label: 'Observations',        icon: Eye,             path: '/observations', group: 'main' },
+  { label: 'CCTV Monitoring',     icon: Camera,          path: '/cctv',       group: 'main' },
+  { label: 'QR Verification',     icon: QrCode,          path: '/qr-verify',  group: 'main' },
+  { label: 'Reports',             icon: FileText,        path: '/reports',    group: 'main' },
+  { label: 'Visitor Pass Codes',  icon: Key,             path: '/passes',     group: 'passes' },
+  { label: 'Gate — Verify Code',  icon: ShieldCheck,     path: '/gate',       group: 'passes' },
 ];
 
 interface SidebarProps {
@@ -75,7 +77,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           Main Menu
         </div>
         <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {navItems.map((item) => {
+          {navItems.filter(i => i.group === 'main').map((item) => {
             const active = location.pathname === item.path;
             return (
               <li key={item.path}>
@@ -95,6 +97,41 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 >
                   <item.icon size={17} style={{ flexShrink: 0 }} />
                   <span>{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Pre-Approved Passes section */}
+        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', padding: '12px 8px 6px', marginTop: 4, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          Pre-Approved Entry
+        </div>
+        <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {navItems.filter(i => i.group === 'passes').map((item) => {
+            const active = location.pathname === item.path;
+            return (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  onClick={onClose}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '9px 10px', borderRadius: 8,
+                    fontSize: 13, fontWeight: 500, textDecoration: 'none',
+                    transition: 'all 0.15s',
+                    background: active ? '#2563EB' : 'transparent',
+                    color: active ? 'white' : '#94A3B8',
+                    position: 'relative',
+                  }}
+                  onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.07)'; }}
+                  onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                >
+                  <item.icon size={17} style={{ flexShrink: 0 }} />
+                  <span>{item.label}</span>
+                  {item.path === '/passes' && (
+                    <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 700, background: '#2563EB', color: 'white', padding: '2px 5px', borderRadius: 4 }}>NEW</span>
+                  )}
                 </Link>
               </li>
             );
