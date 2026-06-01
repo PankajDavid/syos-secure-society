@@ -1,0 +1,16 @@
+{
+  "name": "syos-secure-society",
+  "version": "1.0.0",
+  "description": "SYOS Secure Society - Technology Enabled Security Platform",
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "start": "cd server && npm start"
+  },
+  "keywords": ["security", "society", "iot", "guard-management"],
+  "author": "SYOS Enterprises",
+  "license": "MIT"
+}
