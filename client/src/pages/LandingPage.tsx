@@ -180,7 +180,7 @@ export default function LandingPage() {
 
           <div style={{ background: 'linear-gradient(135deg,#0F172A,#1E293B)', borderRadius: 20, padding: 24, color: 'white' }}>
             <div style={{ fontSize: 11, color: '#64748B', fontWeight: 600, marginBottom: 4 }}>Powered by SYOS Enterprises</div>
-            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 20 }}>Army Welfare Group Housing Society</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 20 }}>Group Housing Society</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10, marginBottom: 16 }}>
               {[['14','Guards'],['120','Flats'],['350','Residents'],['12','Cameras']].map(([v,l]) => (
                 <div key={l} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '12px 14px' }}>

@@ -91,8 +91,8 @@ export const DEMO_PASSES: VisitorPass[] = [
 ];
 
 export const SOCIETY = {
-  name: 'Army Welfare Group Housing Society',
-  location: 'Sector 27, Panchkula, Haryana',
+  name: 'Group Housing Society',
+  location: 'Panchkula, Haryana',
   totalFlats: 120,
   totalResidents: 350,
   totalGuards: 14,

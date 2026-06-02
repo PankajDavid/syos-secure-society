@@ -233,8 +233,8 @@ export default function CommandCenter() {
           </div>
           <div>
             <div style={{ fontSize: 11, color: '#60A5FA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Security Operations Command Center</div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: 'white', lineHeight: 1.2 }}>Army Welfare Group Housing Society</div>
-            <div style={{ fontSize: 11, color: '#64748B', display: 'flex', alignItems: 'center', gap: 4 }}><MapPin size={10} />Sector 27, Panchkula</div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: 'white', lineHeight: 1.2 }}>Group Housing Society</div>
+            <div style={{ fontSize: 11, color: '#64748B', display: 'flex', alignItems: 'center', gap: 4 }}><MapPin size={10} />Panchkula, Haryana</div>
           </div>
         </div>
 
