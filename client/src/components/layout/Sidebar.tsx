@@ -67,8 +67,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           borderRadius: 10, padding: '10px 12px',
         }}>
           <div style={{ fontSize: 10, color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>Active Society</div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'white', lineHeight: 1.3 }}>AWGHS</div>
-          <div style={{ fontSize: 11, color: '#64748B' }}>Sector 27, Panchkula</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'white', lineHeight: 1.3 }}>Group Housing Society</div>
+          <div style={{ fontSize: 11, color: '#64748B' }}>Panchkula, Haryana</div>
         </div>
       </div>
 
