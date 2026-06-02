@@ -16,6 +16,7 @@ const pageTitles: Record<string, string> = {
   '/reports': 'Reports & Analytics',
   '/passes': 'Pre-Approved Visitor Codes',
   '/gate': 'Gate — Code Verification',
+  '/command-center': 'Security Operations Command Center',
 };
 
 export default function AppLayout() {

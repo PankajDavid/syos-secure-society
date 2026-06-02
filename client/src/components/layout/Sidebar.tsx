@@ -1,11 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Users, UserCheck, Shield, Clock,
-  AlertTriangle, Eye, Camera, QrCode, FileText, Home, X, Key, ShieldCheck
+  AlertTriangle, Eye, Camera, QrCode, FileText, Home, X, Key, ShieldCheck, Radio
 } from 'lucide-react';
 
 const navItems = [
-  { label: 'Dashboard',           icon: LayoutDashboard, path: '/dashboard',  group: 'main' },
+  { label: 'Command Center',      icon: Radio,           path: '/command-center', group: 'soc' },
+  { label: 'Dashboard',           icon: LayoutDashboard, path: '/dashboard',      group: 'main' },
   { label: 'Visitor Management',  icon: Users,           path: '/visitors',   group: 'main' },
   { label: 'Resident Approval',   icon: UserCheck,       path: '/approvals',  group: 'main' },
   { label: 'Guard Management',    icon: Shield,          path: '/guards',     group: 'main' },
@@ -73,6 +74,25 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
       {/* Nav */}
       <nav style={{ flex: 1, padding: '4px 12px', overflowY: 'auto' }}>
+        {/* SOC shortcut */}
+        {navItems.filter(i => i.group === 'soc').map((item) => {
+          const active = location.pathname === item.path;
+          return (
+            <div key={item.path} style={{ marginBottom: 8 }}>
+              <Link to={item.path} onClick={onClose} style={{
+                display: 'flex', alignItems: 'center', gap: 10, padding: '10px 10px', borderRadius: 10,
+                fontSize: 13, fontWeight: 700, textDecoration: 'none', transition: 'all 0.15s',
+                background: active ? 'linear-gradient(135deg,#1D4ED8,#7C3AED)' : 'linear-gradient(135deg,rgba(29,78,216,0.15),rgba(124,58,237,0.15))',
+                color: 'white', border: active ? 'none' : '1px solid rgba(124,58,237,0.3)',
+              }}>
+                <item.icon size={17} style={{ flexShrink: 0 }} />
+                <span>{item.label}</span>
+                <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 700, background: '#DC2626', color: 'white', padding: '1px 5px', borderRadius: 3, animation: 'glow-pulse 2s infinite' }}>LIVE</span>
+              </Link>
+            </div>
+          );
+        })}
+
         <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', padding: '8px 8px 6px' }}>
           Main Menu
         </div>

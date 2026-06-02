@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { RoleCtx } from './hooks/useRole';
 import AppLayout from './components/layout/AppLayout';
 import LandingPage from './pages/LandingPage';
+import CommandCenter from './pages/CommandCenter';
 import Dashboard from './pages/Dashboard';
 import Visitors from './pages/Visitors';
 import Approvals from './pages/Approvals';
@@ -25,7 +26,13 @@ export default function App() {
     <RoleCtx.Provider value={{ role, setRole }}>
       <BrowserRouter>
         <Routes>
+          {/* Public landing */}
           <Route path="/" element={<LandingPage />} />
+
+          {/* Command Center — standalone dark layout */}
+          <Route path="/command-center" element={<CommandCenter />} />
+
+          {/* Standard app shell */}
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/visitors" element={<Visitors />} />
@@ -40,7 +47,8 @@ export default function App() {
             <Route path="/passes" element={<VisitorPasses />} />
             <Route path="/gate" element={<GateVerify />} />
           </Route>
-          <Route path="*" element={<Navigate to="/" />} />
+
+          <Route path="*" element={<Navigate to="/command-center" />} />
         </Routes>
       </BrowserRouter>
     </RoleCtx.Provider>
